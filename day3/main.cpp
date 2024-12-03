@@ -30,17 +30,19 @@ int evaluate_substring(std::string substr) {
     // if not found return
     if ( comma_location == std::string::npos) { return 0; };
 
-    std::string left_candidate = substr.substr(0, comma_location);
-    std::string right_substr = substr.substr(comma_location, std::string::npos);
-
-    std::cout << "First number substring candidate:" << left_candidate << std::endl;
+    std::string left_substr = substr.substr(0, comma_location);
+    std::string right_substr = substr.substr(comma_location+1, std::string::npos);
+    std::cout << "Evaluating candidate" << substr << std::endl;
+    std::cout << "right_substr" << right_substr << std::endl;
 
     // check if there are any tricky characters that can pass std::atoi
-    if (left_candidate.find_first_of(" \t\n") == std::string::npos) {
-        return 0;
-    }
+    //if (left_candidate.find_first_of(" \t\n") == std::string::npos) {
+    //      return 0;
+    //}
 
-    int first_number = std::atoi(left_candidate.c_str());
+    int firstLeftNonDigit = left_substr.find_first_not_of("0123456789");
+    if (firstLeftNonDigit != std::string::npos) {return 0;}
+    int first_number = std::atoi(left_substr.c_str());
 
     // "If no conversion can be performed, ​0​ is returned."
     // https://en.cppreference.com/w/cpp/string/byte/atoi
@@ -48,26 +50,22 @@ int evaluate_substring(std::string substr) {
         return 0; 
     }
 
+    std::cout << "First number: " << first_number << std::endl;
+
+
     // second number
-    
-    int r_paren_location = right_substr.find(")");
-    std::string right_candidate = right_substr.substr(1, r_paren_location-1);
-   
-    // check if there are any tricky characters that can pass std::atoi
-    if (right_candidate.find_first_of(" \t\n") == std::string::npos) {
-        return 0;
-    }
-    std::cout << "Second number substring candidate:" << right_candidate << std::endl;
+    int firstRightNonDigit = right_substr.find_first_not_of("0123456789");
+    if (firstRightNonDigit == std::string::npos) {return 0;}
+    if (right_substr[firstRightNonDigit] != ')') {return 0;}
 
-    int second_number = std::atoi(right_candidate.c_str());
+    //std::string right_candidate = right_substr.substr(1, r_paren_location-1);
+    std::cout << "Second number substring candidate:" << right_substr << std::endl;
 
-    if (second_number == 0) {
-        return 0;
-    }
-    //std::cin.get();
-
+    int second_number = std::stoi(right_substr);
+    std::cout << "number 1: " << first_number << "\tnumber 2:" << second_number << std::endl;
     return first_number * second_number;
 }
+
 /*
 mul(667,142);*when
 0123456789abcdef <-  substr length
@@ -90,18 +88,24 @@ int solve_puzzle_1(std::vector<std::string> lines) {
         size_t mul_lparen_position = lines[i].find("mul(");
         size_t mul_lparen_last_position;
 
+
         // loop until the end of the string
         while(mul_lparen_position != std::string::npos) {
             mul_lparen_positions.push_back(mul_lparen_position);
             mul_lparen_last_position = mul_lparen_position;
             mul_lparen_position = lines[i].find("mul(", mul_lparen_position+1);
 
+            std::cout << "\nFound last mul( at index " << mul_lparen_last_position << std::endl;
+            std::cout << "Found mul( at index " << mul_lparen_position << std::endl;
             // adding 4 because it is the length of "mul("
-            int value = evaluate_substring(lines[i].substr(mul_lparen_last_position+4, mul_lparen_position));
-            std::cout << value << std::endl;
+            std::string mul_string = lines[i].substr(mul_lparen_last_position+4, (mul_lparen_position-mul_lparen_last_position));
+
+            std::cout << "evaluating string " << mul_string << std::endl;
+
+            int value = evaluate_substring(mul_string);
+            std::cout <<"Found value: " << value << std::endl;
             sum = sum + value;
        }
-
 
         // printing all the positions as sanity check 
         //for (int i = 0; i < mul_lparen_positions.size(); i++) {
@@ -121,6 +125,7 @@ int solve_puzzle_1(std::vector<std::string> lines) {
 int main() {
     try {
         std::vector<std::string> lines = readFileLines("input1.txt");
+        //std::vector<std::string> lines = readFileLines("test_case1.txt");
         solve_puzzle_1(lines);
 
 
