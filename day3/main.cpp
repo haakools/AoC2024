@@ -7,7 +7,7 @@
 // returns vector of strings, where the "string" is the entire line in the file
 std::vector<std::string> readFileLines(const std::string& filename) {
     std::ifstream file(filename);
-    
+
     std::vector<std::string> lines;
     std::string line;
     if (!file.is_open()) {
@@ -67,10 +67,10 @@ int evaluate_substring(std::string substr) {
 }
 
 /*
-mul(667,142);*when
-0123456789abcdef <-  substr length
+   mul(667,142);*when
+   0123456789abcdef <-  substr length
 
-7 is comma, so substr(7+1, 
+   7 is comma, so substr(7+1, 
 
 */
 
@@ -105,7 +105,7 @@ int solve_puzzle_1(std::vector<std::string> lines) {
             int value = evaluate_substring(mul_string);
             std::cout <<"Found value: " << value << std::endl;
             sum = sum + value;
-       }
+        }
 
         // printing all the positions as sanity check 
         //for (int i = 0; i < mul_lparen_positions.size(); i++) {
@@ -120,13 +120,109 @@ int solve_puzzle_1(std::vector<std::string> lines) {
 }
 
 
+int solve_puzzle_2(std::vector<std::string> lines) {
+    // find occurence of the mul(
+    // check if it is followed by a number,number)
+
+    int sum = 0;
+
+    for (int i = 0; i < lines.size(); i++) {
+
+        // for each line, find the places they occur
+        std::vector<size_t> mul_lparen_positions;
+        size_t mul_lparen_position = lines[i].find("mul(");
+        size_t mul_lparen_last_position;
+        size_t mul_lparen_last_last_position = 0; 
+
+        bool isEnabled = true;
+        size_t enable_index = 0;
+        size_t disable_index = 0;
+
+        // loop until the end of the string
+        while(mul_lparen_position != std::string::npos) {
+
+            mul_lparen_positions.push_back(mul_lparen_position);
+            mul_lparen_last_position = mul_lparen_position;
+            mul_lparen_position = lines[i].find("mul(", mul_lparen_position+1);
+
+            std::string enable_substr = lines[i].substr(mul_lparen_last_last_position, 
+                    mul_lparen_last_position- mul_lparen_last_last_position);
+
+            std::cout << "\nenable substr: " << enable_substr << std::endl;
+
+            size_t enable_index = enable_substr.find("do()");
+            size_t disable_index = enable_substr.find("don't()");
+
+            std::cout << "enable index at  " << disable_index << std::endl;
+            std::cout << "disable index at  " << disable_index << std::endl;    
+
+            // find the last occurence 
+            while (enable_index != std::string::npos) {
+                if (enable_substr.find("do()", enable_index+1) == std::string::npos) {
+                    break;
+                };
+                enable_index = enable_substr.find("do()", enable_index+1);
+                std::cout << "enable enable at  " << disable_index << std::endl;
+            }
+
+            while (disable_index != std::string::npos) {
+                if (enable_substr.find("don't()", disable_index+1) == std::string::npos) {
+                    break;
+                };
+                disable_index = enable_substr.find("don't()", disable_index+1);
+                std::cout << "disable found at  " << disable_index << std::endl;    
+            }
+            //}
+
+            std::cout << "enable index at  " << disable_index << std::endl;
+            std::cout << "disable index at  " << disable_index << std::endl;    
+
+
+            if (enable_index == disable_index || enable_index < disable_index) {
+                std::cout << "Disabling isEnabled  " << std::endl;
+                isEnabled = false;
+            } else {
+                std::cout << "Enabling isEnabled  " << std::endl;
+                isEnabled = true;
+            }
+
+            std::cout << "isEnabled ?  " << isEnabled << std::endl;
+
+            if (isEnabled) {
+                // look for number,number) in spaces between mul( occurences
+                std::cout << "Found last mul( at index " << mul_lparen_last_position << std::endl;
+                std::cout << "Found mul( at index " << mul_lparen_position << std::endl;
+
+                // adding 4 because it is the length of "mul("
+                std::string mul_string = lines[i].substr(mul_lparen_last_position+4, (mul_lparen_position-mul_lparen_last_position));
+
+                std::cout << "evaluating string " << mul_string << std::endl;
+                int value = evaluate_substring(mul_string);
+                std::cout <<"Found value: " << value << std::endl;
+                sum = sum + value;
+            }
+    }
+
+    // printing all the positions as sanity check 
+    //for (int i = 0; i < mul_lparen_positions.size(); i++) {
+    //    std::cout << mul_lparen_positions[i] << std::endl;
+    //}
+
+    //std::cout << lines[i] << std::endl;
+}
+printf("Sum is %d", sum);
+
+return 0;
+}
 
 
 int main() {
     try {
-        std::vector<std::string> lines = readFileLines("input1.txt");
+        //std::vector<std::string> lines = readFileLines("input1.txt");
         //std::vector<std::string> lines = readFileLines("test_case1.txt");
-        solve_puzzle_1(lines);
+        std::vector<std::string> lines = readFileLines("test_case2.txt");
+        //solve_puzzle_1(lines);
+        solve_puzzle_2(lines);
 
 
     } catch (const std::exception& e ) {
