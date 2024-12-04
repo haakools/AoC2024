@@ -56,8 +56,7 @@ gridpos find_surrounding_character(gridpos pos, std::string next_string,
 
 
     // CORNERS
-    std::cout << "debug 2" << std::endl;
-    std::cout << "pos: " << pos.x << pos.y << std::endl;
+    //std::cout << "pos: " << pos.x << pos.y << std::endl;
     if (pos.x == 0 && pos.y == 0) {
         // (1,0), (1,1), (0,1)
         std::vector<gridpos> check_positions = {
@@ -75,7 +74,6 @@ gridpos find_surrounding_character(gridpos pos, std::string next_string,
         return default_position;
     }
 
-    std::cout << "debug 3" << std::endl;
     std::cout << "pos: " << pos.x << pos.y << std::endl;
     if (pos.x == rowSize && pos.y == 0) {
         // (1,0), (1,1), (0,1)
@@ -95,7 +93,6 @@ gridpos find_surrounding_character(gridpos pos, std::string next_string,
         return default_position;
     }
 
-    std::cout << "debug 4" << std::endl;
     if (pos.x == rowSize && pos.y == colSize) {
         // (1,0), (1,1), (0,1)
         std::vector<gridpos> check_positions = {
@@ -113,7 +110,6 @@ gridpos find_surrounding_character(gridpos pos, std::string next_string,
         return default_position;
     }
 
-    std::cout << "debug 5" << std::endl;
     if (pos.x == 0 && pos.y == colSize) {
         // (1,0), (1,1), (0,1)
         std::vector<gridpos> check_positions = {
@@ -137,7 +133,6 @@ gridpos find_surrounding_character(gridpos pos, std::string next_string,
 
     // VERTICIES
 
-    std::cout << "debug 6" << std::endl;
     if (pos.y == 0) {
         std::vector<gridpos> check_positions = {
 
@@ -155,7 +150,6 @@ gridpos find_surrounding_character(gridpos pos, std::string next_string,
         }
     }
 
-    std::cout << "debug 7" << std::endl;
     if (pos.y == colSize) {
         // (1,0), (1,1), (0,1)
         std::vector<gridpos> check_positions = {
@@ -174,7 +168,6 @@ gridpos find_surrounding_character(gridpos pos, std::string next_string,
         }
     }
 
-    std::cout << "debug 8" << std::endl;
     if (pos.x == rowSize) {
         // (1,0), (1,1), (0,1)
         std::vector<gridpos> check_positions = {
@@ -194,15 +187,12 @@ gridpos find_surrounding_character(gridpos pos, std::string next_string,
         }
     }
 
-    std::cout << "debug 9" << std::endl;
     if (pos.x == 0) {
         std::vector<gridpos> check_positions = {
 
-            { 0, -1}, { 1, -1},
-            { 1,  0},
-            { 0, 1},  { 1,  1},
 
-
+        { -1,  0},           { 1,  0},
+        { -1,  1}, { 0, 1},  { 1,  1},
         };
         for (int i=0; i<check_positions.size(); i++) {
             if (grid[pos.x+check_positions[i].x][pos.y+check_positions[i].y] == next_string) {
@@ -229,7 +219,6 @@ gridpos find_surrounding_character(gridpos pos, std::string next_string,
        */
 
     //basecase
-    std::cout << "debug 10" << std::endl;
     std::vector<gridpos> check_positions = {
         // x,  y
         { -1, -1}, { 0, -1}, { 1, -1},
@@ -246,7 +235,6 @@ gridpos find_surrounding_character(gridpos pos, std::string next_string,
         return default_position;
         }
 
-    std::cout << "debug 11" << std::endl;
     return default_position;
 }
 
@@ -254,24 +242,47 @@ gridpos find_surrounding_character(gridpos pos, std::string next_string,
 int solve_puzzle_1(std::vector<std::vector<std::string>> grid) {
     int count = 0;
 
-    std::vector<std::string> targetWord = {"X", "M", "A", "S"};
+    std::vector<std::string> targetWord = {
+        //"X",
+        "M",
+        "A",
+        "S"};
 
 
     int row_size = grid.size()-1;
     int col_size = grid[0].size()-1;
-
+    std::cout << grid[row_size][col_size] << std::endl;
+    std::cout << "rowsize x colsize: " << row_size << "x" << col_size << std::endl;
+    bool foundXmas = false;
     for (int i = 0; i < grid.size(); i++) {
         for (int j = 0; j < grid[i].size(); j++) {
+
+            if (grid[i][j] != "X") {
+                continue;
+            }
+            
             std::cout << grid[i][j] << std::endl;
             for (int k = 0; k <targetWord.size(); k++) {
+
                 gridpos position = {i,j};
-                std::cout << "debug 1" << std::endl;
+
+                std::cout << "Looking for " << targetWord[k]<< std::endl;
                 gridpos nextStringPos = find_surrounding_character(position, targetWord[k], grid, row_size, col_size);
+
+                std::cout << "nextStringPos (x, y) " << nextStringPos.x << nextStringPos.y << std::endl;
                 if (nextStringPos.x == -1 && nextStringPos.y == -1) {
+                    foundXmas = false;
                     break;
                 }
+                std::cout << "Found " << grid[i][j] << std::endl;
+                if (k == targetWord.size()-1) {
+                    foundXmas = true;
+                }
             }
-            count++;
+            if (foundXmas) {
+
+                count++;
+            };
         }
     }
     printf("count is %d", count);
@@ -280,8 +291,8 @@ int solve_puzzle_1(std::vector<std::vector<std::string>> grid) {
 
 int main() {
     try {
-        //std::vector<std::string> lines = readFileLines("input1.txt");
         std::vector<std::vector<std::string>> lines = readFileLines("test_case1.txt");
+        //std::vector<std::vector<std::string>> lines = readFileLines("input1.txt");
         solve_puzzle_1(lines);
 
     } catch (const std::exception& e ) {
