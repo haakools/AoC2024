@@ -59,6 +59,11 @@ long long calculateOutput(std::vector<long long> argVec, std::string operators )
         debugString += std::to_string(argVec[0]);
         solution = argVec[0] * argVec[1];
     }
+    else if (operators[0] == '|') {
+        solution = std::stoll(
+                std::to_string(argVec[0])+std::to_string(argVec[1])
+                );
+    }
 
     for (long long i = 1; i < argVec.size()-1; i++) { 
 
@@ -74,6 +79,11 @@ long long calculateOutput(std::vector<long long> argVec, std::string operators )
                 solution = solution * argVec[i+1];
                 debugString += "*";
                 break;
+            case '|':
+                solution = std::stoll(
+                    std::to_string(solution)+std::to_string(argVec[i+1])
+                );
+
             default:
                 std::cout << "Default statement: " << std::endl;
                 std::cout << op << std::endl;
@@ -155,7 +165,7 @@ long long solve_puzzle_1(std::vector<std::string> lines) {
         }
 
         // hopefully a vector of all solutions
-        std::vector<std::string> operatorSolutions = generateOperators({"*", "+"}, argVec.size()-1);
+        std::vector<std::string> operatorSolutions = generateOperators({"*", "+", "|"}, argVec.size()-1);
 
         //std::cout << "starting for loop: " << std::endl;
         for (long long i = 0; i < operatorSolutions.size(); i++) {
