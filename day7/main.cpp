@@ -22,13 +22,13 @@ std::vector<std::string> readFileLines(const std::string& filename) {
 }
 
 
-std::vector<int> findAllArguments(std::string line) {
+std::vector<long long> findAllArguments(std::string line) {
 
-    std::vector<int> arguments;
+    std::vector<long long> arguments;
 
     // find first
-    int prevPos = 0;
-    int pos = line.find(" ", 0);
+    long long prevPos = 0;
+    long long pos = line.find(" ", 0);
 
     while ( pos != std::string::npos ) {
         prevPos = pos;
@@ -43,10 +43,10 @@ std::vector<int> findAllArguments(std::string line) {
 }
 
 
-int calculateOutput(std::vector<int> argVec, std::string operators ) {
+long long calculateOutput(std::vector<long long> argVec, std::string operators ) {
 
     // Now need to do a tree search if the ops "+" and "*" can solve the solution
-    int solution = 0; // working solution to compare with target
+    long long solution = 0; // working solution to compare with target
     std::string debugString = "";
 
     // First value because cannot start with 0 when doing a product
@@ -60,7 +60,7 @@ int calculateOutput(std::vector<int> argVec, std::string operators ) {
         solution = argVec[0] * argVec[1];
     }
 
-    for (int i = 1; i < argVec.size()-1; i++) { 
+    for (long long i = 1; i < argVec.size()-1; i++) { 
 
         debugString += std::to_string(argVec[i+1]);
 
@@ -116,19 +116,19 @@ std::vector<std::string> generateOperators(const std::vector<std::string>& opera
 }
 
 
-int solve_puzzle_1(std::vector<std::string> lines) {
+long long solve_puzzle_1(std::vector<std::string> lines) {
 
-    int calibrationSum = 0;
+    long long calibrationSum = 0;
 
-    for (int i=0; i< lines.size(); i++) {
+    for (long long i=0; i< lines.size(); i++) {
         // Parsing inputs
         std::cout << "\n\n-------------------" <<  std::endl;
         std::cout << "Parsing line: " << std::endl;
         std::cout << lines[i] <<  std::endl;
         std::cout << "-------------------" <<  std::endl;
 
-        // parse into target and then numbers
-        int semicolonIdx = lines[i].find(":");
+        // parse long longo target and then numbers
+        long long semicolonIdx = lines[i].find(":");
 
         std::cout << lines[i].substr(0, semicolonIdx) <<  std::endl;
 
@@ -146,11 +146,11 @@ int solve_puzzle_1(std::vector<std::string> lines) {
         // std::cout << target << std::endl;
 
         std::string arguemntsString = lines[i].substr(semicolonIdx+1, std::string::npos);
-        std::vector<int> argVec = findAllArguments(arguemntsString);
+        std::vector<long long> argVec = findAllArguments(arguemntsString);
 
         std::cout << "Arguments: " << std::endl;
         // first find all spaces 
-        for (int i = 0; i<argVec.size(); i++) {
+        for (long long i = 0; i<argVec.size(); i++) {
             std::cout << argVec[i] << std::endl;
         }
 
@@ -158,13 +158,13 @@ int solve_puzzle_1(std::vector<std::string> lines) {
         std::vector<std::string> operatorSolutions = generateOperators({"*", "+"}, argVec.size()-1);
 
         //std::cout << "starting for loop: " << std::endl;
-        for (int i = 0; i < operatorSolutions.size(); i++) {
+        for (long long i = 0; i < operatorSolutions.size(); i++) {
             std::string operatorSolution = operatorSolutions[i];
 
             std::cout << "operatorSolution: " << operatorSolution << std::endl;
 
             // test solution
-            int possibleSolution = calculateOutput(argVec, operatorSolution);
+            long long possibleSolution = calculateOutput(argVec, operatorSolution);
 
 
             std::cout << "Possible solution : " << operatorSolution << std::endl;
@@ -202,6 +202,7 @@ int solve_puzzle_1(std::vector<std::string> lines) {
 int main() {
     try {
         //std::vector<std::string> lines = readFileLines("test_case1.txt");
+        //std::vector<std::string> lines = readFileLines("test_case2.txt");
         std::vector<std::string> lines = readFileLines("input1.txt");
         solve_puzzle_1(lines);
 
