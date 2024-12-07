@@ -22,9 +22,57 @@ std::vector<std::string> readFileLines(const std::string& filename) {
 }
 
 
+
+std::vector<int> findAllArguments(std::string line) {
+
+    std::vector<int> arguments;
+
+    // find first
+    int prevPos = 0;
+    int pos = line.find(" ", 0);
+
+    
+    while ( pos != std::string::npos ) {
+        prevPos = pos;
+        pos = line.find(" ", prevPos+1);
+        arguments.push_back(
+                std::stoi(
+                    line.substr(prevPos, pos)
+                    )
+                );
+    };
+
+
+    return arguments;
+
+}
+
+
 int solve_puzzle_1(std::vector<std::string> lines) {
+
+
     for (int i=0; i< lines.size(); i++) {
+        std::cout << "Parsing line: " << std::endl;
         std::cout << lines[i] <<  std::endl;
+
+        // parse into result and then numbers
+        int semicolonIdx = lines[i].find(":");
+        int result = std::stoi(lines[i].substr(0, semicolonIdx));
+
+        std::cout << "Target result: " << std::endl;
+        std::cout << result << std::endl;
+
+
+        std::string arguemntsString = lines[i].substr(semicolonIdx+1, std::string::npos);
+        std::vector<int> arguments = findAllArguments(arguemntsString);
+
+        std::cout << "Arguments: " << std::endl;
+        // first find all spaces 
+        for (int i = 0; i<arguments.size(); i++) {
+            std::cout << arguments[i] << std::endl;
+
+        }
+
     };
     return 0;
 }
