@@ -48,7 +48,7 @@ int calculateOutput(std::vector<int> argVec, std::string operators ) {
     // Now need to do a tree search if the ops "+" and "*" can solve the solution
     int solution = 0; // working solution to compare with target
     std::string debugString = "";
-   
+
     // First value because cannot start with 0 when doing a product
     if (operators[0] == '+') {
         debugString += std::to_string(argVec[0]);
@@ -59,7 +59,7 @@ int calculateOutput(std::vector<int> argVec, std::string operators ) {
         debugString += std::to_string(argVec[0]);
         solution = argVec[0] * argVec[1];
     }
-    
+
     for (int i = 1; i < argVec.size()-1; i++) { 
 
         debugString += std::to_string(argVec[i+1]);
@@ -129,7 +129,18 @@ int solve_puzzle_1(std::vector<std::string> lines) {
 
         // parse into target and then numbers
         int semicolonIdx = lines[i].find(":");
-        int target = std::stoi(lines[i].substr(0, semicolonIdx));
+
+        std::cout << lines[i].substr(0, semicolonIdx) <<  std::endl;
+
+        try {
+            long long large_num = std::stoll(lines[i].substr(0, semicolonIdx));
+        } catch (std::invalid_argument& e) {
+            std::cerr << "Invalid argument: " << e.what() << std::endl;
+        } catch (std::out_of_range& e) {
+            std::cerr << "Out of range: " << e.what() << std::endl;
+        }
+
+        long long target = std::stoll(lines[i].substr(0, semicolonIdx));
 
         // std::cout << "Target target: " << std::endl;
         // std::cout << target << std::endl;
@@ -190,8 +201,8 @@ int solve_puzzle_1(std::vector<std::string> lines) {
 
 int main() {
     try {
-        std::vector<std::string> lines = readFileLines("test_case1.txt");
-        //std::vector<std::vector<std::string>> lines = readFileLines("input1.txt");
+        //std::vector<std::string> lines = readFileLines("test_case1.txt");
+        std::vector<std::string> lines = readFileLines("input1.txt");
         solve_puzzle_1(lines);
 
     } catch (const std::exception& e ) {
