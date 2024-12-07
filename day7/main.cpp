@@ -30,7 +30,6 @@ std::vector<int> findAllArguments(std::string line) {
     int prevPos = 0;
     int pos = line.find(" ", 0);
 
-
     while ( pos != std::string::npos ) {
         prevPos = pos;
         pos = line.find(" ", prevPos+1);
@@ -48,14 +47,32 @@ int calculateOutput(std::vector<int> argVec, std::string operators ) {
 
     // Now need to do a tree search if the ops "+" and "*" can solve the solution
     int solution = 0; // working solution to compare with target
-    for (int i = 0; i < argVec.size()-1; i++) { 
+    std::string debugString = "";
+   
+    // First value because cannot start with 0 when doing a product
+    if (operators[0] == '+') {
+        debugString += std::to_string(argVec[0]);
+        debugString += std::to_string(argVec[0]);
+        solution = argVec[0] + argVec[1];
+    }
+    else if (operators[0] == '*') {
+        debugString += std::to_string(argVec[0]);
+        solution = argVec[0] * argVec[1];
+    }
+    
+    for (int i = 1; i < argVec.size()-1; i++) { 
+
+        debugString += std::to_string(argVec[i+1]);
+
         char op = operators[i];
         switch (op) {
             case '+':
-                solution = argVec[i] + argVec[i+1];
+                solution += argVec[i+1];
+                debugString += "+";
                 break;
             case '*':
-                solution = argVec[i] * argVec[i+1];
+                solution = solution * argVec[i+1];
+                debugString += "*";
                 break;
             default:
                 std::cout << "Default statement: " << std::endl;
@@ -63,77 +80,40 @@ int calculateOutput(std::vector<int> argVec, std::string operators ) {
                 break;
 
         };
+        std::cout << "calculateOutput::Current value: " << solution<<  std::endl;
     }
+
+    debugString += std::to_string(argVec[argVec.size()-1]);
+
+    std::cout << "debug" << std::endl;
+    std::cout << debugString << std::endl;
+    std::cout << "debug\n" << std::endl;
+
     return solution;
 }
 
 
 std::vector<std::string> generateOperators(const std::vector<std::string>& operators, size_t length) {
     std::vector<std::string> result;
-    
+
+    // Base case: if length is 0, return empty string
+    if (length == 0) {
+        result.push_back("");
+        return result;
+    }
+
     // Recursive case
     std::vector<std::string> subResults = generateOperators(operators, length - 1);
-    
+
     // For each previous result, append each possible operator
     for (const std::string& subResult : subResults) {
         for (const std::string& op : operators) {
             result.push_back(subResult + op);
         }
     }
-    
+
     return result;
 }
-
-/*
-std::vector<std::string> generateOperators(const std::vector<std::string> operatorList) {
-    std::vector<std::string> result;
-    // I am a genius
-    for(const std::string val1 : operatorList) {
-        for(const std::string val2 : operatorList) {
-            for(const std::string val3 : operatorList) {
-                for(const std::string val4 : operatorList) {
-                    for(const std::string val5 : operatorList) {
-                        for(const std::string val6 : operatorList) {
-                            for(const std::string val7 : operatorList) {
-                                for(const std::string val8 : operatorList) {
-                                    for(const std::string val9 : operatorList) {
-                                        for(const std::string val10 : operatorList) {
-                                            for(const std::string val11 : operatorList) {
-                                                for(const std::string val12 : operatorList) {
-                                                    for(const std::string val13 : operatorList) {
-                                                        std::string combination;
-                                                        combination += val1;
-                                                        combination += val2;
-                                                        combination += val3;
-                                                        combination += val4;
-                                                        combination += val5;
-                                                        combination += val6;
-                                                        combination += val7;
-                                                        combination += val8;
-                                                        combination += val9;
-                                                        combination += val10;
-                                                        combination += val11;
-                                                        combination += val12;
-                                                        combination += val13;
-                                                        result.push_back(combination);
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return result;
-}
-*/
-
-
 
 
 int solve_puzzle_1(std::vector<std::string> lines) {
@@ -142,8 +122,10 @@ int solve_puzzle_1(std::vector<std::string> lines) {
 
     for (int i=0; i< lines.size(); i++) {
         // Parsing inputs
-        // std::cout << "Parsing line: " << std::endl;
-        // std::cout << lines[i] <<  std::endl;
+        std::cout << "\n\n-------------------" <<  std::endl;
+        std::cout << "Parsing line: " << std::endl;
+        std::cout << lines[i] <<  std::endl;
+        std::cout << "-------------------" <<  std::endl;
 
         // parse into target and then numbers
         int semicolonIdx = lines[i].find(":");
@@ -155,25 +137,44 @@ int solve_puzzle_1(std::vector<std::string> lines) {
         std::string arguemntsString = lines[i].substr(semicolonIdx+1, std::string::npos);
         std::vector<int> argVec = findAllArguments(arguemntsString);
 
-        //std::cout << "Arguments: " << std::endl;
+        std::cout << "Arguments: " << std::endl;
         // first find all spaces 
-        //for (int i = 0; i<argVec.size(); i++) {
-        //    std::cout << argVec[i] << std::endl;
-        //}
+        for (int i = 0; i<argVec.size(); i++) {
+            std::cout << argVec[i] << std::endl;
+        }
 
         // hopefully a vector of all solutions
-        std::vector<std::string> operatorSolutions = generateOperators({"*", "+"}, argVec.size());
+        std::vector<std::string> operatorSolutions = generateOperators({"*", "+"}, argVec.size()-1);
 
+        //std::cout << "starting for loop: " << std::endl;
         for (int i = 0; i < operatorSolutions.size(); i++) {
-            std::string operatorSolution = operatorSolutions[i]; //.substr(0, argVec.size());
+            std::string operatorSolution = operatorSolutions[i];
 
-            std::cout << operatorSolution << std::endl;
+            std::cout << "operatorSolution: " << operatorSolution << std::endl;
 
             // test solution
             int possibleSolution = calculateOutput(argVec, operatorSolution);
+
+
+            std::cout << "Possible solution : " << operatorSolution << std::endl;
+            std::cout << "Returns : " << possibleSolution << std::endl;
+
+
+            // Sanity check
+            for (size_t k = 0; k < argVec.size() || k < operatorSolution.length(); k++) {
+                if (i < argVec.size())
+                    std::cout << argVec[k];
+                if (i < operatorSolution.length())
+                    std::cout << operatorSolution[k];
+            }
+
+            std::cout << " = " << target << std::endl;
+
+
+
             if (possibleSolution == target) {
-                std::cout << "Found solution: " << std::endl;
-                std::cout << operatorSolution << std::endl;
+
+                std::cout << "FOUND SOLUTION: " << operatorSolution << std::endl;
                 calibrationSum = calibrationSum + target;
                 break;
             }
