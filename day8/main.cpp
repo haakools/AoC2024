@@ -6,11 +6,13 @@
 
 
 // 12 for test case, 50 for input
+//#define MATRIXSIZE 50
 #define MATRIXSIZE 12
 
 
 typedef struct {
     char matrix[MATRIXSIZE][MATRIXSIZE];
+
 } matrix;
 
 matrix readMatrixFromFile(const std::string& filename) {
@@ -93,16 +95,33 @@ void solve_puzzle_1(matrix freqMat) {
     // # is the antipode
     // Find all the location for a frequency.
 
-
-
-
     // Finally sum the #
 
 
     // Populate this with all the frequencies
-    std::vector<char> frequencies = {'0','A'};
+    //std::vector<char> frequencies = {'0','A'};
+    std::vector<char> frequencies;
+    for (char ch = '0'; ch <= '9'; ++ch) {
+        frequencies.push_back(ch);
+    }
+
+    // Add uppercase letters 'A' to 'Z'
+    for (char ch = 'A'; ch <= 'Z'; ++ch) {
+        frequencies.push_back(ch);
+    }
+
+    // Add lowercase letters 'a' to 'z'
+    for (char ch = 'a'; ch <= 'z'; ++ch) {
+        frequencies.push_back(ch);
+    }
 
     matrix antinodes;
+
+    for (int i = 0; i < MATRIXSIZE; ++i) {
+        for (int j = 0; j < MATRIXSIZE; ++j) {
+            antinodes.matrix[i][j] = '.';
+        }
+    }
 
     // Loop over the locations of the frequencies 
     for (char frequency : frequencies) {
@@ -117,7 +136,7 @@ void solve_puzzle_1(matrix freqMat) {
                     freqLoc.push_back(
                             std::make_pair(i, j)
                             );
-                    if (freqLoc.size() > 1) {
+                    if (freqLoc.size() <= 1) {
                         continue;
                     };
 
@@ -126,25 +145,31 @@ void solve_puzzle_1(matrix freqMat) {
                         // For each value that is twice the length away, insert a #
                         int x1 = i;
                         int y1 = j;
+
                         int x2 = freqLoc[p].first;
                         int y2 = freqLoc[p].second;
-                        
-                        int maxPointDistance = manhattan_distance(x1, y1, x2, y2);
+
+                        int maxPointDistance = 2*manhattan_distance(x1, y1, x2, y2);
 
                         // assuming the distance cannot reach the dista
-                        for (int p1= -maxPointDistance; p1<maxPointDistance; p1++) {
-                        for (int p2= -maxPointDistance; p2<maxPointDistance; p2++) {
-                            int potentialDistance = manhattan_distance(x1, y1, p1, p2);
-                            int doubleDistance = 2*manhattan_distance(x2, y2, p1, p2);
-                            if (potentialDistance == doubleDistance) {
-                                if (p1>0 && p2 > 0) {
-                                    antinodes.matrix[p1][p2] = '#';
-                                };
+                        for (int p1= 0; p1<maxPointDistance; p1++) {
+                            for (int p2= 0; p2<maxPointDistance; p2++) {
+
+                                int potentialDistance = manhattan_distance(x1, y1, p1, p2);
+                                int doubleDistance = 2*manhattan_distance(x2, y2, p1, p2);
+                                //printf("\nEvaluating point (%d, %d)", p1, p2);
+                                //printf("\t D(p1, (x1,y1)) = %d", potentialDistance);
+                                //printf("\t D(p1, (x2,y2)) = %d\n", doubleDistance);
+                                 // also check if either i or j is valid --> between 0 and MATRIXSIZE
+                                if (potentialDistance == doubleDistance) {
+                                    if (p1>0 && p2 > 0) {
+                                        //printf("\n\tFound match for (%d, %d)\n", p1, p2);
+                                        antinodes.matrix[p1][p2] = '#';
+                                    };
+                                }
                             }
                         }
-                    }
-                        
-                        // also check if either i or j is valid --> between 0 and MATRIXSIZE
+
 
                     }
 
@@ -155,6 +180,10 @@ void solve_puzzle_1(matrix freqMat) {
     }
 
 
+
+
+
+
     // finding unique entries in matrix antinodes
     int uniqueAntinodes = 0;
     for (int i = 0; i < MATRIXSIZE; ++i) {
@@ -162,7 +191,9 @@ void solve_puzzle_1(matrix freqMat) {
             if (antinodes.matrix[i][j] == '#') {
                 uniqueAntinodes++;
             }
+            std::cout << antinodes.matrix[i][j] << ' ';
         }
+        std::cout << '\n' << std::endl;
     }
     std::cout<< "Unique antinodes:" << uniqueAntinodes << std::endl;
 };
@@ -170,6 +201,9 @@ void solve_puzzle_1(matrix freqMat) {
 
 int main() {
     try {
+
+        // 309 too high
+        //matrix freqMat = readMatrixFromFile("input1.txt");
         matrix freqMat = readMatrixFromFile("test_case1.txt");
         solve_puzzle_1(freqMat);
 
